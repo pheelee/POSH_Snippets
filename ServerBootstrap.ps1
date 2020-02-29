@@ -1,19 +1,23 @@
- $ip = "192.168.3.5"
+  $ip = "192.168.3.5"
 $gw = "192.168.3.254"
 $dns = "192.168.3.254"
 
 $hostname = "D001"
 
-#$adapter = (Get-NetAdapter)[0]
-#$adapter | New-NetIPAddress -IPAddress $ip -DefaultGateway $gw -PrefixLength 24
-#Set-DnsClientServerAddress -InterfaceAlias $adapter.ifAlias -ServerAddresses $dns
-
-# Install-Module NetworkingDSC,ComputerManagementDSC -Force
+Install-Module NetworkingDSC,ComputerManagementDSC -Confirm:$false
 
 Configuration BaseConfig {
     Import-DscResource -Module NetworkingDSC
     Import-DscResource -Module ComputerManagementDSC
     Node localhost {
+
+        RemoteDesktopAdmin RemoteDesktopSettings
+        {
+            IsSingleInstance   = 'yes'
+            Ensure             = 'Present'
+            UserAuthentication = 'Secure'
+        }
+
         NetIPInterface DisableDhcp
         {
             InterfaceAlias = 'Ethernet'
@@ -74,4 +78,4 @@ Configuration BaseConfig {
 
 . BaseConfig
 Start-DscConfiguration .\BaseConfig -Wait -Force
- 
+  
