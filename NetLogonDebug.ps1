@@ -20,7 +20,7 @@ function Disable-NetLogonDebugLog
     if($OldLogSize -ne 0){
         New-ItemProperty HKLM:\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters -Name MaximumLogFileSize -PropertyType Dword -Value $OldLogSize -Force
     }else{
-        Remove-ItemProperty HKLM:\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters -Name MaximumLogFileSize
+        Remove-ItemProperty HKLM:\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters -Name MaximumLogFileSize -ErrorAction SilentlyContinue
     }
     . Nltest /DBFlag:0x0
     Restart-Service Netlogon -Force
