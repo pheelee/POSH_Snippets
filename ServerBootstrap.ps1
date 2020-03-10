@@ -1,14 +1,15 @@
-  $ip = "192.168.3.5"
+   $ip = "192.168.3.1"
 $gw = "192.168.3.254"
 $dns = "192.168.3.254"
 
-$hostname = "D001"
+$hostname = "D01"
 
-Install-Module NetworkingDSC,ComputerManagementDSC -Confirm:$false
+
 
 Configuration BaseConfig {
     Import-DscResource -Module NetworkingDSC
     Import-DscResource -Module ComputerManagementDSC
+    Import-DscResource -Module PSDesiredStateConfiguration
     Node localhost {
 
         RemoteDesktopAdmin RemoteDesktopSettings
@@ -16,6 +17,13 @@ Configuration BaseConfig {
             IsSingleInstance   = 'yes'
             Ensure             = 'Present'
             UserAuthentication = 'Secure'
+        }
+
+        Firewall RdpIn
+        {
+            Ensure = 'Present'
+            Name = 'RemoteDesktop-UserMode-In-TCP'
+            Enabled = 'True'
         }
 
         NetIPInterface DisableDhcp
@@ -48,7 +56,7 @@ Configuration BaseConfig {
 
         Computer node
         {
-            Name = 'D001'
+            Name = "$hostname"
         }
 
         TimeZone tz
@@ -76,6 +84,9 @@ Configuration BaseConfig {
     }
 }
 
+Install-Module NetworkingDSC,ComputerManagementDSC -Confirm:$false 
+
 . BaseConfig
 Start-DscConfiguration .\BaseConfig -Wait -Force
   
+ 
